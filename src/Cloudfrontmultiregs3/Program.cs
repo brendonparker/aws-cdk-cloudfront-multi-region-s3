@@ -39,6 +39,8 @@ sealed class Program
             SecondayBucketArnParameterName = secondaryBucketArnParameterName
         });
 
+        stackGlobal.AddDependency(stackSecondary);
+
         app.Synth();
     }
 }
