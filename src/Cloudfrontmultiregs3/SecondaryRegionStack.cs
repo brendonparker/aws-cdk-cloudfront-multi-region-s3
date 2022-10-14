@@ -1,6 +1,5 @@
 ﻿using Amazon.CDK;
 using Amazon.CDK.AWS.S3;
-using Amazon.CDK.AWS.S3.Assets;
 using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
