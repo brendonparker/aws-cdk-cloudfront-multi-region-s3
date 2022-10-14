@@ -12,11 +12,11 @@ class GlobalStack : Stack
         var secondaryBucketArn = new SSMParameterReader(this, "SecondaryBucketArn", new SSMParameterReader.SSMParameterReaderProps
         {
             ParameterName = props.SecondayBucketArnParameterName,
-            Region = "us-east-1"
+            Region = props.SecondaryRegion
         });
         var secondaryBucket = S3.Bucket.FromBucketArn(this, "SecondaryBucket", secondaryBucketArn.GetParameterValue());
 
-        new CloudFront.Distribution(this, "Distribution", new CloudFront.DistributionProps
+        var dist = new CloudFront.Distribution(this, "Distribution", new CloudFront.DistributionProps
         {
             DefaultBehavior = new CloudFront.BehaviorOptions
             {
@@ -41,6 +41,12 @@ class GlobalStack : Stack
                 }
             },
             MinimumProtocolVersion = CloudFront.SecurityPolicyProtocol.TLS_V1_2_2021
+        });
+
+        new CfnOutput(this, "CdnDomainName", new CfnOutputProps
+        {
+            ExportName = "CdnDomainName",
+            Value = dist.DomainName
         });
     }
 }

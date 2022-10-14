@@ -5,26 +5,32 @@ namespace Cloudfrontmultiregs3;
 
 sealed class Program
 {
+    static string ACCOUNT => System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT");
     public static void Main(string[] args)
     {
         var secondaryBucketArnParameterName = "seconday-BucketArn";
+        var secondaryRegion = "us-east-2";
+        var pathToAssets = "./public";
+
         var app = new App();
-        var stackPrimary = new PrimaryRegionStack(app, "PrimaryRegionStack", new StackProps
+        var stackPrimary = new PrimaryRegionStack(app, "PrimaryRegionStack", new PrimaryRegionStackProps
         {
             Env = new Amazon.CDK.Environment
             {
-                Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
+                Account = ACCOUNT,
                 Region = "us-east-1",
-            }
+            },
+            PathToAssets = pathToAssets
         });
 
         var stackSecondary = new SecondaryRegionStack(app, "SecondaryRegionStack", new SecondaryRegionStackProps
         {
             Env = new Amazon.CDK.Environment
             {
-                Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
-                Region = "us-east-2",
+                Account = ACCOUNT,
+                Region = secondaryRegion,
             },
+            PathToAssets = pathToAssets,
             BucketArnParameterName = secondaryBucketArnParameterName
         });
 
@@ -32,11 +38,12 @@ sealed class Program
         {
             Env = new Amazon.CDK.Environment
             {
-                Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
+                Account = ACCOUNT,
                 Region = "us-east-1",
             },
             PrimaryBucket = stackPrimary.Bucket,
-            SecondayBucketArnParameterName = secondaryBucketArnParameterName
+            SecondayBucketArnParameterName = secondaryBucketArnParameterName,
+            SecondaryRegion = secondaryRegion
         });
 
         stackGlobal.AddDependency(stackSecondary);

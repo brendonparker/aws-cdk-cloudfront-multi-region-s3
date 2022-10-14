@@ -1,5 +1,7 @@
 ﻿using Amazon.CDK;
 using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.S3.Assets;
+using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 
@@ -8,6 +10,7 @@ namespace Cloudfrontmultiregs3;
 public class SecondaryRegionStackProps : StackProps
 {
     public string BucketArnParameterName { get; set; }
+    public string PathToAssets { get; set; }
 }
 
 public class SecondaryRegionStack : Stack
@@ -16,6 +19,15 @@ public class SecondaryRegionStack : Stack
     {
         var bucket = new Bucket(this, "Bucket");
         bucket.ApplyRemovalPolicy(RemovalPolicy.DESTROY);
+
+        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps
+        {
+            DestinationBucket = bucket,
+            Sources = new[]
+            {
+                Source.Asset(props.PathToAssets)
+            }
+        });
 
         new StringParameter(this, "BucketArn", new StringParameterProps
         {
