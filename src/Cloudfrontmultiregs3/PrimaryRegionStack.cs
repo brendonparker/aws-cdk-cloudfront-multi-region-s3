@@ -15,19 +15,8 @@ public class PrimaryRegionStack : Stack
     public IBucket Bucket { get; private set; }
     internal PrimaryRegionStack(Construct scope, string id, PrimaryRegionStackProps props) : base(scope, id, props)
     {
-        Bucket = new Bucket(this, "Bucket", new BucketProps
-        {
-            BucketName = PhysicalName.GENERATE_IF_NEEDED
-        });
+        Bucket = new Bucket(this, "Bucket");
+        // Note: This can't be destroyed unless it is empty. Not sure how to auto-empty.
         Bucket.ApplyRemovalPolicy(RemovalPolicy.DESTROY);
-
-        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps
-        {
-            DestinationBucket = Bucket,
-            Sources = new[]
-            {
-                Source.Asset(props.PathToAssets)
-            }
-        });
     }
 }

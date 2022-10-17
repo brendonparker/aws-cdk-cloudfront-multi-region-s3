@@ -1,6 +1,4 @@
-# Welcome to your CDK C# project!
-
-This is a blank project for CDK development with C#.
+# Demo CDK C# project: CloudFront for multi-region-s3-fallback deployment
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

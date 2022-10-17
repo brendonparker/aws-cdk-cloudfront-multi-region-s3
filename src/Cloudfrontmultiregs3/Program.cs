@@ -1,5 +1,4 @@
 ﻿using Amazon.CDK;
-using System.Linq;
 
 namespace Cloudfrontmultiregs3;
 
@@ -8,6 +7,7 @@ sealed class Program
     static string ACCOUNT => System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT");
     public static void Main(string[] args)
     {
+        var primaryRegion = "us-east-1";
         var secondaryBucketArnParameterName = "seconday-BucketArn";
         var secondaryRegion = "us-east-2";
         var pathToAssets = "./public";
@@ -18,9 +18,8 @@ sealed class Program
             Env = new Amazon.CDK.Environment
             {
                 Account = ACCOUNT,
-                Region = "us-east-1",
-            },
-            PathToAssets = pathToAssets
+                Region = primaryRegion,
+            }
         });
 
         var stackSecondary = new SecondaryRegionStack(app, "SecondaryRegionStack", new SecondaryRegionStackProps
@@ -30,7 +29,6 @@ sealed class Program
                 Account = ACCOUNT,
                 Region = secondaryRegion,
             },
-            PathToAssets = pathToAssets,
             BucketArnParameterName = secondaryBucketArnParameterName
         });
 
@@ -39,11 +37,12 @@ sealed class Program
             Env = new Amazon.CDK.Environment
             {
                 Account = ACCOUNT,
-                Region = "us-east-1",
+                Region = primaryRegion,
             },
             PrimaryBucket = stackPrimary.Bucket,
             SecondayBucketArnParameterName = secondaryBucketArnParameterName,
-            SecondaryRegion = secondaryRegion
+            SecondaryRegion = secondaryRegion,
+            PathToAssets = pathToAssets
         });
 
         stackGlobal.AddDependency(stackSecondary);
